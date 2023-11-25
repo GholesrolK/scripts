@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Define the bookmarked folder paths and their corresponding labels
+bookmarks=(
+    "$HOME/.local/scripts:Scripts"
+    "$HOME/.local/src:Source Files"
+    "$HOME/.config:Configurations"
+)
+
+# Use dmenu to select a bookmark
+selected_label=$(printf '%s\n' "${bookmarks[@]#*:}" | dmenu -i -p "Bookmarks:")
+
+# Find the corresponding bookmark path based on the selected label
+selected_bookmark=$(printf '%s\n' "${bookmarks[@]}" | awk -F':' -v label="$selected_label" '$2 == label {print $1}')
+
+# Open the selected folder in Thunar
+thunar "$selected_bookmark"

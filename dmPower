@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Define the power options
+options=("Sign Out" "Shutdown" "Reboot")
+
+# Use dmenu to select a power option
+selected_option=$(printf '%s\n' "${options[@]}" | dmenu -i -p "Power Options:")
+
+# Handle the selected power option
+case $selected_option in
+    "Sign Out")
+        pkill -9 Xorg
+        ;;
+    "Shutdown")
+        shutdown -P now
+        ;;
+    "Reboot")
+        reboot
+        ;;
+    *)
+        echo "Invalid option"
+        ;;
+esac

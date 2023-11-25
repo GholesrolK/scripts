@@ -1,0 +1,20 @@
+#!/bin/sh
+
+wallpapers_dir="$HOME/wallpapers"
+
+# Get the list of wallpaper files
+wallpapers=$(find "$wallpapers_dir" -type f -name "*.jpg" -o -name "*.png")
+
+# Extract only the file names without the path
+wallpaper_names=$(basename -a $wallpapers)
+
+# Use dmenu to select a wallpaper
+selected_wallpaper=$(echo "$wallpaper_names" | dmenu -i -p "Choose a Wallpaper")
+
+# Set the selected wallpaper as the background
+xwallpaper --zoom "$wallpapers_dir/$selected_wallpaper"
+
+wal -c
+wal -i "$wallpapers_dir/$selected_wallpaper"
+
+xdotool key super+F5
