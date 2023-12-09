@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+# Move from Downloads to the Music directory
+find ~/Downloads -type f \( -name "*.mp3" -o -name "*.m4a" \) -exec mv {} ~/Music \;
+
+# Move from Downloads to the Video directory
+find ~/Downloads -type f \( -name "*.mp4" -o -name "*.mov" \) -exec mv {} ~/Video \;
+
+# Move from Downloads to the Pictures directory
+find ~/Downloads -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) -exec mv {} ~/Pictures \;
+
+# Move files from Downloads to the Documents directory 
+find ~/Downloads -type f \( -name "*.txt" -o -name "*.docx" -o -name "*.pdf" \) -exec mv {} ~/Documents \;
