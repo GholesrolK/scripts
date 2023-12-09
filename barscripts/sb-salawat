@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Retrieve the current month and year
+current_month=$(date +%m)
+current_year=$(date +%Y)
+current_day=$(date +"%-d")
+
+record=$((current_day - 1))
+
+# Make the API call
+api_url="http://api.aladhan.com/v1/calendarByAddress/$current_year/$current_month?&address=%20Tripoli,%20Libya&method=16"
+response=$(curl -s "$api_url")
+
+# Extract the prayer times for the current day
+day_data=$(echo "$response" | jq -r ".data[$record] ")
+
+# Extract the prayer times and timings
+date=$(echo "$day_data" | jq -r ".date.readable")
+
+# Retrieve the current time
+current_time=$(date +%H:%M)
+
+# Extract the next prayer time and name using jq
+next_prayer=$(echo "$response" | jq -r --arg current_time "$current_time" '.data[].timings | to_entries | .[] | select(.value > $current_time and .key != "Lastthird" and .key != "Firstthird" and .key != "Midnight" and .key != "Imsak") | .key' | head -n 1)
+next_prayer_time=$(echo "$response" | jq -r --arg current_time "$current_time" '.data[].timings | to_entries | .[] | select(.value > $current_time and .key != "Lastthird" and .key != "Firstthird" and .key != "Midnight" and .key != "Imsak") | .value' | head -n 1)
+
+# If next prayer is not found for the current day, get the Fajr prayer for the following day
+if [[ -z "$next_prayer" ]]; then
+    next_prayer=$(echo "$response" | jq -r '.data[].timings | to_entries | .[] | select(.key == "Fajr") | .key' | head -n 1)
+    next_prayer_time=$(echo "$response" | jq -r '.data[].timings | to_entries | .[] | select(.key == "Fajr") | .value' | head -n 1)
+fi
+
+# Convert the next prayer time to 12-hour format
+next_prayer_time=$(date -d "$next_prayer_time" +"%I:%M%p")
+
+# Print the next prayer time and name
+echo " 🕌 $next_prayer $next_prayer_time |"

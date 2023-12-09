@@ -17,4 +17,8 @@ xwallpaper --zoom "$wallpapers_dir/$selected_wallpaper"
 wal -c
 wal -i "$wallpapers_dir/$selected_wallpaper"
 
+
+
+
 xdotool key super+F5
+
