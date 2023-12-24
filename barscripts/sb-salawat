@@ -21,13 +21,13 @@ date=$(echo "$day_data" | jq -r ".date.readable")
 current_time=$(date +%H:%M)
 
 # Extract the next prayer time and name using jq
-next_prayer=$(echo "$response" | jq -r --arg current_time "$current_time" '.data[].timings | to_entries | .[] | select(.value > $current_time and .key != "Lastthird" and .key != "Firstthird" and .key != "Midnight" and .key != "Imsak") | .key' | head -n 1)
-next_prayer_time=$(echo "$response" | jq -r --arg current_time "$current_time" '.data[].timings | to_entries | .[] | select(.value > $current_time and .key != "Lastthird" and .key != "Firstthird" and .key != "Midnight" and .key != "Imsak") | .value' | head -n 1)
+next_prayer=$(echo "$response" | jq -r --arg current_time "$current_time" ".data[$record].timings | to_entries | .[] | select(.value > \$current_time and .key != \"Lastthird\" and .key != \"Firstthird\" and .key != \"Midnight\" and .key != \"Imsak\") | .key" | head -n 1)
+next_prayer_time=$(echo "$response" | jq -r --arg current_time "$current_time" ".data[$record].timings | to_entries | .[] | select(.value > \$current_time and .key != \"Lastthird\" and .key != \"Firstthird\" and .key != \"Midnight\" and .key != \"Imsak\") | .value" | head -n 1)
 
 # If next prayer is not found for the current day, get the Fajr prayer for the following day
 if [[ -z "$next_prayer" ]]; then
-    next_prayer=$(echo "$response" | jq -r '.data[].timings | to_entries | .[] | select(.key == "Fajr") | .key' | head -n 1)
-    next_prayer_time=$(echo "$response" | jq -r '.data[].timings | to_entries | .[] | select(.key == "Fajr") | .value' | head -n 1)
+    next_prayer=$(echo "$response" | jq -r '.data[$((record + 1))].timings | to_entries | .[] | select(.key == "Fajr") | .key' | head -n 1)
+    next_prayer_time=$(echo "$response" | jq -r '.data[$((record + 1))].timings | to_entries | .[] | select(.key == "Fajr") | .value' | head -n 1)
 fi
 
 # Convert the next prayer time to 12-hour format
