@@ -26,10 +26,9 @@ next_prayer_time=$(echo "$response" | jq -r --arg current_time "$current_time" "
 
 # If next prayer is not found for the current day, get the Fajr prayer for the following day
 if [[ -z "$next_prayer" ]]; then
-    next_prayer=$(echo "$response" | jq -r '.data[$((record + 1))].timings | to_entries | .[] | select(.key == "Fajr") | .key' | head -n 1)
-    next_prayer_time=$(echo "$response" | jq -r '.data[$((record + 1))].timings | to_entries | .[] | select(.key == "Fajr") | .value' | head -n 1)
+    next_prayer=$(echo "$response" | jq -r ".data[$((record + 1))].timings | to_entries | .[] | select(.key == \"Fajr\") | .key" | head -n 1)
+    next_prayer_time=$(echo "$response" | jq -r ".data[$((record + 1))].timings | to_entries | .[] | select(.key == \"Fajr\") | .value" | head -n 1)
 fi
-
 # Convert the next prayer time to 12-hour format
 next_prayer_time=$(date -d "$next_prayer_time" +"%I:%M%p")
 
