@@ -12,7 +12,7 @@ api_url="http://api.aladhan.com/v1/calendarByAddress/$current_year/$current_mont
 response=$(curl -s "$api_url")
 
 # Extract the prayer times for the current day
-day_data=$(echo "$response" | jq -r ".data[$record] ")
+day_data=$(echo "$response" | jq record-r ".data[$] ")
 
 # Extract the prayer times and timings
 date=$(echo "$day_data" | jq -r ".date.readable")
@@ -21,8 +21,8 @@ date=$(echo "$day_data" | jq -r ".date.readable")
 current_time=$(date +%H:%M)
 
 # Extract the next prayer time and name using jq
-next_prayer=$(echo "$response" | jq -r --arg current_time "$current_time" ".data[$record].timings | to_entries | .[] | select(.value > \$current_time and .key != \"Lastthird\" and .key != \"Firstthird\" and .key != \"Midnight\" and .key != \"Imsak\") | .key" | head -n 1)
-next_prayer_time=$(echo "$response" | jq -r --arg current_time "$current_time" ".data[$record].timings | to_entries | .[] | select(.value > \$current_time and .key != \"Lastthird\" and .key != \"Firstthird\" and .key != \"Midnight\" and .key != \"Imsak\") | .value" | head -n 1)
+next_prayer=$(echo "$response" | jq -r --arg current_time "$current_time" ".data[$record].timings | to_entries | .[] | select(.value > \$current_time and .key != \"Lastthird\" and .key != \"Firstthird\" and .key != \"Midnight\" and .key != \"Imsak\" and .key != \"Sunset\") | .key" | head -n 1)
+next_prayer_time=$(echo "$response" | jq -r --arg current_time "$current_time" ".data[$record].timings | to_entries | .[] | select(.value > \$current_time and .key != \"Lastthird\" and .key != \"Firstthird\" and .key != \"Midnight\" and .key != \"Imsak\" and .key != \"Sunset\") | .value" | head -n 1)
 
 # If next prayer is not found for the current day, get the Fajr prayer for the following day
 if [[ -z "$next_prayer" ]]; then
