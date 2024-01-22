@@ -4,15 +4,42 @@
 current_month=$(date +%m)
 current_year=$(date +%Y)
 current_day=$(date +"%-d")
-
 record=$((current_day - 1))
 
-# Make the API call
-api_url="http://api.aladhan.com/v1/calendarByAddress/$current_year/$current_month?&address=%20Tripoli,%20Libya&method=16"
-response=$(curl -s "$api_url")
+# Define the file path for storing the content
+file_path="salawat.txt"
+
+# Get the current year and month
+current_year=$(date +%Y)
+current_month=$(date +%m)
+
+# Check if the file exists
+if [ -f "$file_path" ]; then
+    # File exists, read the stored month from the file
+    stored_month=$(date -r "$file_path" +%m)
+
+    # Compare the current month with the stored month
+    if [ "$current_month" = "$stored_month" ]; then
+        # Months are the same, read the content from the file
+        response=$(cat "$file_path")
+        
+    else
+        # File exists, but it's not the same month
+        api_url="http://api.aladhan.com/v1/calendarByAddress/$current_year/$current_month?address=Tripoli,%20Libya&method=16"
+        response=$(curl -s "$api_url")
+        echo "$response" > "$file_path"
+       
+    fi
+else
+    # File does not exist. Creating a new file
+    api_url="http://api.aladhan.com/v1/calendarByAddress/$current_year/$current_month?address=Tripoli,%20Libya&method=16"
+    response=$(curl -s "$api_url")
+    echo "$response" > "$file_path"
+    
+fi
 
 # Extract the prayer times for the current day
-day_data=$(echo "$response" | jq record-r ".data[$] ")
+
 
 # Extract the prayer times and timings
 date=$(echo "$day_data" | jq -r ".date.readable")
